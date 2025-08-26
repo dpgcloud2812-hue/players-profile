@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PFS Premier League Player Profile</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: 'Inter', sans-serif; }
+    /* Ensure black text on white, including autofill */
+    input, textarea { color: #000; background: #fff; }
+    input::placeholder, textarea::placeholder { color: #374151; }
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #000 !important;
+      -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+      box-shadow: 0 0 0px 1000px #fff inset !important;
+      caret-color: #000;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100 p-6 md:p-8 flex items-start justify-center">
+  <div class="w-full max-w-6xl bg-gray-800/70 backdrop-blur rounded-2xl shadow-2xl p-6 md:p-8 relative">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-center mb-8 bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">PFS Premier League</h1>
+
+    <!-- View Players Button (Top Right) -->
+    <button id="viewPlayersBtn" class="absolute top-6 right-6 md:top-8 md:right-8 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors">View Players</button>
+
+    <!-- User ID Display -->
+    <div id="userIdDisplay" class="text-center mb-4 text-xs md:text-sm text-gray-400 hidden">
+      Your User ID:
+      <span id="userIdValue" class="font-mono bg-gray-700 text-gray-200 rounded px-2 py-1 select-all break-all"></span>
+    </div>
+
+    <!-- FORM -->
+    <section id="playerFormContainer" class="space-y-6">
+      <h2 class="text-2xl font-bold text-center text-gray-200">Player Submission Form</h2>
+      <form id="playerForm" class="space-y-5" novalidate>
+        <!-- Player Name -->
+        <div>
+          <label for="name" class="block text-gray-300 font-medium mb-1">Player's Name</label>
+          <input id="name" name="name" type="text" required placeholder="e.g., John Doe"
+                   class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 transition" />
+        </div>
+
+        <!-- Primary Skill -->
+        <div class="space-y-2">
+          <span class="block text-gray-300 font-medium">Primary Skill <span class="text-red-400">*</span></span>
+          <div class="flex flex-wrap gap-x-6 gap-y-2">
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="primarySkill" value="Batting" required class="text-purple-400 focus:ring-purple-500" />
+              <span>Batting</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="primarySkill" value="Bowling" required class="text-purple-400 focus:ring-purple-500" />
+              <span>Bowling</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Secondary Skill -->
+        <div class="space-y-2">
+          <span class="block text-gray-300 font-medium">Secondary Skill <span class="text-red-400">*</span></span>
+          <div class="flex flex-wrap gap-x-6 gap-y-2">
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="secondarySkill" value="Batting" required class="text-purple-400 focus:ring-purple-500" />
+              <span>Batting</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="secondarySkill" value="Bowling" required class="text-purple-400 focus:ring-purple-500" />
+              <span>Bowling</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+              <input type="radio" name="secondarySkill" value="None" required class="text-purple-400 focus:ring-purple-500" />
+              <span>None</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Contact Number -->
+        <div>
+          <label for="contactNumber" class="block text-gray-300 font-medium mb-1">Contact Number</label>
+          <input id="contactNumber" name="contactNumber" type="tel" required inputmode="tel" placeholder="e.g., +91 9876543210"
+                   class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 transition" />
+          <p class="text-xs text-gray-400 mt-1">We'll never share your number.</p>
+        </div>
+
+        <!-- Profile Picture -->
+        <div>
+          <label for="profilePic" class="block text-gray-300 font-medium mb-1">Profile Picture <span class="text-red-400">*</span></label>
+          <input id="profilePic" name="profilePic" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" required />
+          <label for="profilePic" class="cursor-pointer bg-teal-700 text-teal-100 font-medium py-2 px-4 rounded-lg border border-teal-500 shadow-md hover:bg-teal-600 transition">Choose File</label>
+          <span id="fileName" class="ml-2 text-gray-400 text-sm">No file chosen</span>
+          <p class="text-xs text-gray-400 mt-1">Tip: use a photo under ~1MB; we automatically resize to keep it lightweight.</p>
+        </div>
+
+        <!-- Cricheros Profile -->
+        <div>
+          <label for="cricherosProfile" class="block text-gray-300 font-medium mb-1">Cricheros Profile (Optional)</label>
+          <input id="cricherosProfile" name="cricherosProfile" type="url" placeholder="https://cricheros.com/profile/your-id"
+                   class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 transition tracking-tight" />
+          <p class="text-xs text-gray-400 mt-1">Paste the full URL. The field is full-width so long links remain visible.</p>
+        </div>
+
+        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold py-3 rounded-lg shadow-lg transition">Submit Profile</button>
+      </form>
+    </section>
+
+    <!-- VIEW -->
+    <section id="playerViewContainer" class="hidden">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <button id="backToFormBtn" class="bg-gray-700 hover:bg-gray-600 text-gray-100 font-semibold py-2 px-4 rounded-lg shadow-md transition">&larr; Back to Form</button>
+      </div>
+
+      <!-- Search -->
+      <div class="flex items-center gap-2 mb-6">
+        <input id="searchBar" type="text" placeholder="Search for a player by name..."
+                   class="flex-1 px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400 transition" />
+        <button id="searchButton" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition">Search</button>
+      </div>
+
+      <!-- Cards grid -->
+      <div id="playerList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <p id="loadingMessage" class="col-span-full text-center text-gray-400">Loading players...</p>
+      </div>
+
+      <!-- Dev/Test utilities -->
+      <details class="mt-8 rounded-lg border border-gray-700 p-4 bg-gray-800/50">
+        <summary class="cursor-pointer select-none font-semibold text-gray-200">Developer Tests</summary>
+        <div class="mt-4 space-y-2">
+          <button id="runTests" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded">Run Data Shape Tests</button>
+          <pre id="testOutput" class="mt-3 p-3 bg-gray-900 rounded text-xs overflow-auto"></pre>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <!-- Custom Message Modal -->
+  <div id="messageBox" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-gray-900 bg-opacity-80 backdrop-blur-sm rounded-lg p-6 w-full max-w-sm border border-gray-700 shadow-xl space-y-4 text-center">
+      <p id="messageText" class="text-white font-medium"></p>
+      <button id="messageOkBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition">OK</button>
+    </div>
+  </div>
+
+  <!-- Firebase App -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getFirestore, collection, addDoc, onSnapshot, query, getDocs, or, where } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+    // Provided by the Canvas environment
+    const appId = firebaseConfig.projectId;
+    const firebaseConfig = {
+    apiKey: "AIzaSyCCyhltMucD_GPA2uWoJMXvUhxlyk50VEc",
+    authDomain: "players-profile-submission.firebaseapp.com",
+    projectId: "players-profile-submission",
+    storageBucket: "players-profile-submission.firebasestorage.app",
+    messagingSenderId: "741282463920",
+    appId: "1:741282463920:web:856060e842909dabca7b75",
+    measurementId: "G-BYKXXM0Q75"
+  };
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    let db, auth, userId;
+    let allPlayers = [];
+
+    // UI refs
+    const playerFormContainer = document.getElementById('playerFormContainer');
+    const playerViewContainer = document.getElementById('playerViewContainer');
+    const playerForm = document.getElementById('playerForm');
+    const viewPlayersBtn = document.getElementById('viewPlayersBtn');
+    const backToFormBtn = document.getElementById('backToFormBtn');
+    const searchBar = document.getElementById('searchBar');
+    const searchButton = document.getElementById('searchButton');
+    const playerList = document.getElementById('playerList');
+    const fileNameSpan = document.getElementById('fileName');
+    const profilePicInput = document.getElementById('profilePic');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const userIdDisplay = document.getElementById('userIdDisplay');
+    const userIdValue = document.getElementById('userIdValue');
+    const runTestsBtn = document.getElementById('runTests');
+    const testOutput = document.getElementById('testOutput');
+
+    // Message box refs
+    const messageBox = document.getElementById('messageBox');
+    const messageText = document.getElementById('messageText');
+    const messageOkBtn = document.getElementById('messageOkBtn');
+
+    // --- Firebase init & auth ---
+    const initializeFirebase = async () => {
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        
+        await signInAnonymously(auth);
+        
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            userId = user.uid;
+            userIdDisplay.classList.remove('hidden');
+            userIdValue.textContent = userId;
+            listenForPlayers();
+          } else {
+            console.warn('User signed out.');
+          }
+        });
+      } catch (err) {
+        console.error('Firebase init error:', err);
+        if (loadingMessage) loadingMessage.textContent = 'Error connecting to the database.';
+      }
+    };
+
+    // --- Message Box UI ---
+    const showMessage = (text) => {
+      messageText.textContent = text;
+      messageBox.classList.remove('hidden');
+    };
+
+    messageOkBtn.addEventListener('click', () => {
+      messageBox.classList.add('hidden');
+    });
+
+    // --- Navigation ---
+    const showPlayerView = () => {
+      playerFormContainer.classList.add('hidden');
+      playerViewContainer.classList.remove('hidden');
+    };
+    const showFormView = () => {
+      playerFormContainer.classList.remove('hidden');
+      playerViewContainer.classList.add('hidden');
+    };
+    viewPlayersBtn.addEventListener('click', showPlayerView);
+    backToFormBtn.addEventListener('click', showFormView);
+
+    // File name UI
+    profilePicInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      fileNameSpan.textContent = file ? file.name : 'No file chosen';
+    });
+
+    // --- Helpers ---
+    const isValidUrl = (u) => {
+      if (!u) return true; // optional
+      try { new URL(u); return true; } catch { return false; }
+    };
+
+    const readImageFile = (file, maxSide = 640, quality = 0.75) => new Promise((resolve, reject) => {
+      if (!file) return reject(new Error('No file provided'));
+      if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) return reject(new Error('Unsupported image type'));
+
+      const reader = new FileReader();
+      const img = new Image();
+      reader.onload = (e) => {
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const { width, height } = img;
+          const scale = Math.min(1, maxSide / Math.max(width, height));
+          canvas.width = Math.round(width * scale);
+          canvas.height = Math.round(height * scale);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const mime = file.type.toLowerCase().includes('png') ? 'image/png' : 'image/jpeg';
+          const dataUrl = canvas.toDataURL(mime, quality);
+          resolve(dataUrl);
+        };
+        img.onerror = () => reject(new Error('Invalid image content'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+
+    // Ensure no undefined values are sent to Firestore (it rejects undefined)
+    const preparePlayerPayload = (fields) => {
+      const payload = {
+        name: fields.name || '',
+        primarySkill: fields.primarySkill || '',
+        secondarySkill: fields.secondarySkill || '',
+        contactNumber: fields.contactNumber || '',
+        cricherosProfile: fields.cricherosProfile || '',
+        profilePic: typeof fields.profilePic === 'string' && fields.profilePic.startsWith('data:') ? fields.profilePic : null,
+        userId: userId || null,
+        timestamp: Date.now(),
+      };
+      Object.keys(payload).forEach((k) => { if (payload[k] === undefined) payload[k] = null; });
+      return payload;
+    };
+
+    const validatePlayerData = (fields) => {
+      const errors = [];
+      if (!fields.name || fields.name.trim().length < 2) errors.push('Please enter a valid name.');
+      if (!fields.primarySkill) errors.push('Please select a primary skill.');
+      if (!fields.secondarySkill) errors.push('Please select a secondary skill.');
+      if (!fields.contactNumber || fields.contactNumber.trim().length < 6) errors.push('Please enter a valid contact number.');
+      if (fields.cricherosProfile && !isValidUrl(fields.cricherosProfile)) errors.push('Cricheros URL looks invalid.');
+      if (!fields.profilePicFile) errors.push('Profile picture is required.');
+      return errors;
+    };
+
+    // --- Check for duplicates ---
+    const checkIfPlayerExists = async (name, contactNumber) => {
+      const playersRef = collection(db, `artifacts/${appId}/public/data/players`);
+      const q = query(playersRef, or(where("name", "==", name), where("contactNumber", "==", contactNumber)));
+      const snapshot = await getDocs(q);
+      return !snapshot.empty;
+    };
+
+    // --- Add player ---
+    const addPlayer = async (playerData) => {
+      try {
+        const playersRef = collection(db, `artifacts/${appId}/public/data/players`);
+        await addDoc(playersRef, playerData);
+        showMessage('Profile Submitted Successfully!');
+        // Small delay to allow user to see the message before redirecting
+        setTimeout(showPlayerView, 1500);
+      } catch (err) {
+        console.error('Error adding player:', err);
+        let msg = 'Could not save the profile.';
+        if (err && err.code) msg += ` (code: ${err.code})`;
+        showMessage(msg + ' Please try again.');
+        throw err;
+      }
+    };
+
+    // --- Realtime players ---
+    const listenForPlayers = () => {
+      const playersRef = collection(db, `artifacts/${appId}/public/data/players`);
+      const q = query(playersRef);
+      onSnapshot(q, (snap) => {
+        allPlayers = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        // Sort players by timestamp (most recent first) in JavaScript to avoid Firestore index issues
+        allPlayers.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        displayPlayers(allPlayers);
+      }, (err) => {
+        console.error('Error fetching players:', err);
+        playerList.innerHTML = '<p class="col-span-full text-center text-red-400">Error loading players.</p>';
+      });
+    };
+
+    // --- Render cards grid ---
+    const displayPlayers = (players) => {
+      playerList.innerHTML = '';
+      if (!players || players.length === 0) {
+        playerList.innerHTML = '<p class="col-span-full text-center text-gray-400">No players found.</p>';
+        return;
+      }
+
+      players.forEach((p) => {
+        const card = document.createElement('article');
+        card.className = 'group rounded-xl border border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 shadow hover:shadow-lg transition overflow-hidden';
+
+        const imgUrl = p.profilePic || 'https://placehold.co/300x300/3f305f/d4b3ff?text=No+Photo';
+        const primaryBadge = `<span class="px-2 py-0.5 text-xs rounded-full bg-purple-600/20 text-purple-300 border border-purple-500/40">${(p.primarySkill||'').toString()}</span>`;
+        const secondaryBadge = `<span class="px-2 py-0.5 text-xs rounded-full bg-cyan-600/20 text-cyan-300 border border-cyan-500/40">${(p.secondarySkill||'').toString()}</span>`;
+
+        card.innerHTML = `
+          <div class="relative">
+            <img src="${imgUrl}" alt="${p.name || 'Player'}" class="w-full h-44 object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0"></div>
+            <div class="absolute bottom-2 left-2 right-2 flex items-center gap-2">${primaryBadge}${secondaryBadge}</div>
+          </div>
+          <div class="p-4 flex flex-col gap-2">
+            <h3 class="text-lg font-bold text-gray-100 leading-tight truncate" title="${p.name || ''}">${p.name || ''}</h3>
+            <div class="text-sm text-gray-300">
+              <a href="tel:${p.contactNumber || ''}" class="hover:underline">📞 ${p.contactNumber || 'N/A'}</a>
+            </div>
+            ${p.cricherosProfile ? `<a href="${p.cricherosProfile}" target="_blank" class="text-sm break-all text-blue-300 hover:text-blue-200 hover:underline">${p.cricherosProfile}</a>` : ''}
+            <div class="mt-2 flex items-center justify-between text-xs text-gray-400">
+              <span class="font-mono truncate" title="${p.userId || ''}">UID: ${p.userId || ''}</span>
+              ${p.timestamp ? `<time>${new Date(p.timestamp).toLocaleString()}</time>` : ''}
+            </div>
+          </div>
+        `;
+        playerList.appendChild(card);
+      });
+    };
+
+    // --- Search ---
+    const performSearch = () => {
+      const term = (searchBar.value || '').toLowerCase().trim();
+      const filtered = allPlayers.filter((p) => (p.name || '').toLowerCase().includes(term));
+      displayPlayers(filtered);
+    };
+
+    searchButton.addEventListener('click', performSearch);
+    searchBar.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+    // Small debounce for live search typing
+    let t; searchBar.addEventListener('input', () => { clearTimeout(t); t = setTimeout(performSearch, 250); });
+
+    // --- Submit ---
+    playerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const primarySkill = (document.querySelector('input[name="primarySkill"]:checked') || {}).value || '';
+      const secondarySkill = (document.querySelector('input[name="secondarySkill"]:checked') || {}).value || '';
+      const contactNumber = document.getElementById('contactNumber').value.trim();
+      const cricherosProfile = document.getElementById('cricherosProfile').value.trim();
+      const profilePicFile = document.getElementById('profilePic').files[0] || null;
+
+      const errors = validatePlayerData({ name, primarySkill, secondarySkill, contactNumber, cricherosProfile, profilePicFile });
+      if (errors.length) {
+        showMessage(errors.join('\n'));
+        return;
+      }
+
+      // Check for existing player before proceeding
+      const playerExists = await checkIfPlayerExists(name, contactNumber);
+      if (playerExists) {
+        showMessage('Player with this name or contact number already exists.');
+        return;
+      }
+
+      let profilePicBase64 = null;
+      try {
+        profilePicBase64 = await readImageFile(profilePicFile, 640, 0.75); // downscale to keep size small
+      } catch (imgErr) {
+        console.error('Image read/resize failed:', imgErr);
+        showMessage('Could not read the profile picture. Please try another image.');
+        return;
+      }
+
+      const newPlayer = preparePlayerPayload({
+        name,
+        primarySkill,
+        secondarySkill,
+        contactNumber,
+        cricherosProfile,
+        profilePic: profilePicBase64,
+      });
+
+      await addPlayer(newPlayer);
+      playerForm.reset();
+      fileNameSpan.textContent = 'No file chosen';
+    });
+
+    // --- Tests ---
+    const runTests = () => {
+      const lines = [];
+      const log = (ok, msg) => lines.push(`${ok ? '✅' : '❌'} ${msg}`);
+
+      // Test 1: preparePlayerPayload should not contain undefined
+      const payload = preparePlayerPayload({ name: 'Alice', primarySkill: 'Batting', secondarySkill: 'Bowling', contactNumber: '123456', cricherosProfile: '', profilePic: 'data:image/png;base64,iVBORw0KGgo=' });
+      const hasUndefined = Object.values(payload).some((v) => v === undefined);
+      log(!hasUndefined, 'No undefined values in payload');
+
+      // Test 2: payload includes keys
+      const keys = ['name','primarySkill','secondarySkill','contactNumber','cricherosProfile','profilePic','userId','timestamp'];
+      log(keys.every(k => Object.prototype.hasOwnProperty.call(payload, k)), 'Payload has all expected keys');
+
+      // Test 3: URL validation
+      log(isValidUrl('https://cricheros.com/p/123'), 'Valid URL passes');
+      log(!isValidUrl('not-a-url'), 'Invalid URL fails');
+
+      // Test 4: validatePlayerData catches missing fields
+      const errs = validatePlayerData({ name: '', primarySkill: '', secondarySkill: '', contactNumber: '', cricherosProfile: 'http:/bad', profilePicFile: null });
+      log(errs.length >= 4, 'Validator reports multiple errors for bad input');
+
+      // Test 5: preparePlayerPayload accepts null profilePic
+      const pp = preparePlayerPayload({ name: 'B', primarySkill: 'Bowling', secondarySkill: 'None', contactNumber: '999999', cricherosProfile: '', profilePic: null });
+      log(pp.profilePic === null, 'profilePic may be null');
+
+      testOutput.textContent = lines.join('\n');
+    };
+
+    if (runTestsBtn) runTestsBtn.addEventListener('click', runTests);
+
+    window.onload = initializeFirebase;
+  </script>
+</body>
+</html>
